@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        .height-100 {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            width: 400px;
+            border: none;
+            box-shadow: 0px 5px 20px 0px #d2dae3;
+            z-index: 1;
+            display: flex;
+            flex-direction: column; /* Align items vertically */
+            justify-content: center;
+            align-items: center; /* Center items horizontally */
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card h6 {
+            color: red;
+            font-size: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .inputs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .inputs input {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            text-align: center;
+        }
+
+        .validate {
+            border-radius: 20px;
+            height: 40px;
+            background-color: red;
+            border: 1px solid red;
+            width: 140px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .timer {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .resend {
+            margin-top: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: blue;
+            display: none;
+        }
+
+        .message {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container height-100 d-flex justify-content-center align-items-center">
+        <div class="position-relative">
+            <div class="card text-center">
+                <h6>Please enter the one-time password to verify your account</h6>
+                <div><span>A code has been sent to your mail</span></div>
+                <form method="POST">
+                    <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+                        <input name="A" class="text-center form-control rounded" type="text" maxlength="1" />
+                        <input name="B" class="text-center form-control rounded" type="text" maxlength="1" />
+                        <input name="C" class="text-center form-control rounded" type="text" maxlength="1" />
+                        <input name="D" class="text-center form-control rounded" type="text" maxlength="1" />
+                        <input name="E" class="text-center form-control rounded" type="text" maxlength="1" />
+                        <input name="F" class="text-center form-control rounded" type="text" maxlength="1" />
+                    </div>
+                    
+                    <button type="submit" class="validate">Validate</button> 
+                </form> 
+                
+                <div class="timer" id="timer">00:60</div>
+                <a><div class="resend" id="resend">Resend OTP</div></a>
+                <div class="message" id="message">Didn't receive the OTP? Click Resend OTP.</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            
+            function OTPInput() {
+                const inputs = document.querySelectorAll('#otp > input');
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].addEventListener('keydown', function(event) {
+                        if (event.key === "Backspace") {
+                            inputs[i].value = '';
+                            if (i !== 0) inputs[i - 1].focus();
+                        } else if (event.key === "Enter") {
+                            if (i !== inputs.length - 1) inputs[i + 1].focus();
+                            event.preventDefault();
+                        } else {
+                            if (i === inputs.length - 1 && inputs[i].value !== '') {
+                                return true;
+                            } else if (event.keyCode > 47 && event.keyCode < 58) {
+                                inputs[i].value = event.key;
+                                if (i !== inputs.length - 1) inputs[i + 1].focus();
+                                event.preventDefault();
+                            } else if (event.keyCode > 64 && event.keyCode < 91) {
+                                inputs[i].value = String.fromCharCode(event.keyCode);
+                                if (i !== inputs.length - 1) inputs[i + 1].focus();
+                                event.preventDefault();
+                            }
+                        }
+                    });
+                }
+            }
+    
+            OTPInput();
+    
+            const timer = document.getElementById('timer');
+            const resend = document.getElementById('resend');
+            const message = document.getElementById('message');
+    
+            let count = 60; // Initial count, same as the TTL value
+            let timerInterval;
+            function startTimer() {
+                timerInterval = setInterval(() => {
+                    count--;
+                    if (count <= 0) {
+                        clearInterval(timerInterval);
+                        timer.style.display = 'none';
+                        resend.style.display = 'block';
+                        message.textContent = "Didn't receive the OTP? Click Resend OTP.";
+                    } else {
+                        const minutes = Math.floor(count / 60);
+                        const seconds = count % 60;
+                        timer.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    }
+                }, 1000);
+            }
+    
+            // Start the timer immediately on page load
+            startTimer();
+    
+            resend.addEventListener('click', function() {
+                count = 60;
+                timer.textContent = '01:00'; // Reset timer display
+                timer.style.display = 'block';
+                resend.style.display = 'none';
+                startTimer();
+                message.textContent = "OTP resent. Please check your email.";
+            });
+    
+            document.addEventListener('submit', function(event) {
+                event.preventDefault();
+    
+                const A = document.querySelector('input[name="A"]').value;
+                const B = document.querySelector('input[name="B"]').value;
+                const C = document.querySelector('input[name="C"]').value;
+                const D = document.querySelector('input[name="D"]').value;
+                const E = document.querySelector('input[name="E"]').value;
+                const F = document.querySelector('input[name="F"]').value;
+    
+                fetch('/otp_verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        A,
+                        B,
+                        C,
+                        D,
+                        E,
+                        F
+                    })
+                }).then(response => response.json())
+                .then(data => {
+                    if (!data.ok) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                        });
+                    } else {
+                        window.location.href = '/signIn';
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+    
+            document.getElementById('resend').addEventListener('click', function(event) {
+                event.preventDefault();
+    
+                fetch('/resend_otp', {
+                    method: 'GET',
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+    
+        });
+    </script>
+    
+    
+</body>
+</html>
+

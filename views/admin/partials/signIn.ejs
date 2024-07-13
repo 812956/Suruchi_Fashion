@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from admin.pixelstrap.net/dunzo/template/login_two.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 02 Apr 2024 16:52:33 GMT -->
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Dunzo admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+  <meta name="keywords"
+    content="admin template, Dunzo admin template, dashboard template, flat admin template, responsive admin template, web app">
+  <meta name="author" content="pixelstrap">
+  <link rel="icon" href="/admin/logadmin/assets/images/favicon.png" type="image/x-icon">
+  <link rel="shortcut icon" href="/admin/logadmin/assets/images/favicon.png" type="image/x-icon">
+  <title>Dunzo - Premium Admin Template</title>
+  <!-- Google font-->
+  <link href="https://fonts.googleapis.com/css?family=Outfit:400,400i,500,500i,700,700i&amp;display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/font-awesome.css">
+  <!-- ico-font-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/vendors/icofont.css">
+  <!-- Themify icon-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/vendors/themify.css">
+  <!-- Flag icon-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/vendors/flag-icon.css">
+  <!-- Feather icon-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/vendors/feather-icon.css">
+  <!-- Plugins css start-->
+  <!-- Plugins css Ends-->
+  <!-- Bootstrap css-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/vendors/bootstrap.css">
+  <!-- App css-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/style.css">
+  <link id="color" rel="stylesheet" href="/admin/logadmin/assets/css/color-1.css" media="screen">
+  <!-- Responsive css-->
+  <link rel="stylesheet" type="text/css" href="/admin/logadmin/assets/css/responsive.css">
+</head>
+
+<body>
+  <!-- login page start-->
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xl-5"><img class="bg-img-cover bg-center" src="/admin/logadmin/assets/images/login/3.jpg"
+          alt="looginpage"></div>
+      <div class="col-xl-7 p-0">
+        <div class="login-card login-dark">
+          <div>
+            <div><a class="logo text-start" href="index.html"><img class="img-fluid for-light"
+                  src="/admin/logadmin/assets/images/logo/logo-1.png" alt="looginpage"><img
+                  class="img-fluid for-dark" src="/admin/logadmin/assets/images/logo/logo.png"
+                  alt="looginpage"></a></div>
+            <div class="login-main">
+              <form class="theme-form" id="registrationForm" method="POST">
+                <h4>Sign in to account</h4>
+                <p id="error">Enter your email & password to login</p>
+                <div class="form-group">
+                  <label class="col-form-label">Email Address</label>
+
+                  <input class="form-control" name="email" id="email" type="email" required=""
+                    placeholder="Test@gmail.com">
+                  <div id="email-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label">Password</label>
+                  <div class="form-input position-relative">
+                    <input class="form-control" type="password" id="password" name="login[password]" required=""
+                      placeholder="*********">
+                    <div class="show-hide"><span class="show"> </span></div>
+                  </div>
+                  <div id="password-error" class="error-message"></div>
+                </div>
+                <div class="form-group mb-0">
+                  <div class="checkbox p-0">
+                    <input id="checkbox1" type="checkbox">
+                    <label class="text-muted" for="checkbox1">Remember password</label>
+                  </div>
+                  <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
+                </div>
+
+              </form>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script>
+
+      document.getElementById('registrationForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        const emailRegex = /^\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\s*$/;
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+
+        let isValid = true;
+
+        if (!emailRegex.test(email)) {
+          showError('email-error', 'Email Is Incorrect');
+          isValid = false;
+        } else {
+          hideError('email-error');
+        }
+
+        if (!passwordRegex.test(password)) {
+          showError('password-error', 'Password Is Incorrect');
+          isValid = false;
+        } else {
+          hideError('password-error');
+        }
+
+
+
+        if (isValid === true) {
+
+          fetch('/admin/admin_signIn', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: email,
+              password: password
+            })
+          }).then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                window.location.href = '/admin/admin_panel';
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: data.message
+                })
+                
+              }
+
+            })
+            .catch(error => {
+              Swal.fire("Error!", "An error occurred while processing your request.", "error");
+              console.error('Error:', error);
+            })
+        }
+      });
+
+      function showError(errorId, message) {
+        let errorElement = document.getElementById(errorId);
+        errorElement.textContent = message;
+      }
+
+      function hideError(errorId) {
+        let errorElement = document.getElementById(errorId);
+        errorElement.textContent = '';
+      }
+
+
+    </script>
+
+
+    <!-- latest jquery-->
+    <script src="/admin/logadmin/assets/js/jquery.min.js"></script>
+    <!-- Bootstrap js-->
+    <script src="/admin/logadmin/assets/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- feather icon js-->
+    <script src="/admin/logadmin/assets/js/icons/feather-icon/feather.min.js"></script>
+    <script src="/admin/logadmin/assets/js/icons/feather-icon/feather-icon.js"></script>
+    <!-- scrollbar js-->
+    <!-- Sidebar jquery-->
+    <script src="/admin/logadmin/assets/js/config.js"></script>
+    <!-- Plugins JS start-->
+    <!-- Plugins JS Ends-->
+    <!-- Theme js-->
+    <script src="/admin/logadmin/assets/js/script.js"></script>
+    <!-- Plugin used-->
+  </div>
+</body>
+
+<!-- Mirrored from admin.pixelstrap.net/dunzo/template/login_two.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 02 Apr 2024 16:52:33 GMT -->
+
+</html>
